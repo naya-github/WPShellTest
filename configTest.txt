@@ -1,2 +1,3 @@
-Git Remote : AAAAAAAAAAAAAAAA
+Git Repository : AAAAAAAAAAAAAAAA
 Git Branch : BBBBBBBBBBBBBBBB
+Git Local Folder Root : A:\PPAP
