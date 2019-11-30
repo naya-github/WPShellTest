@@ -13,8 +13,8 @@ Param(
 # TEST CODE.
 $fileName = Split-Path -Leaf $ConfigFilePath
 $filePath = Split-Path -Parent $ConfigFilePath
-# Write-Host $fileName
-# Write-Host $filePath
+Write-Host $fileName
+Write-Host $filePath
 
 # 設定の配列を定義.
 $hashConfig = @{}
@@ -70,7 +70,7 @@ if ($hashConfig.ContainsKey('GitLocalFolderRoot')) {
 #        # http://stakiran.hatenablog.com/entry/2018/05/08/195848
 #        # https://tortoisegit.org/docs/tortoisegit/tgit-automation.html
 #        # "C:\Program Files\TortoiseGit\bin\TortoiseGitProc.exe" /command:log /path:"(ローカルリポジトリのフルパス)"
-#        git checkout -b new-branch origin/new-branch
+#        git checkout -b new-branch origin/branch
     }
 }
 
