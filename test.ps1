@@ -1,4 +1,4 @@
-# ExecutionPolicy オプションによる実行ポリシーの変更
+﻿# ExecutionPolicy オプションによる実行ポリシーの変更
 # [ PowerShell -ExecutionPolicy RemoteSigned ]
 # or
 # Set-ExecutionPolicy による恒久的な実行ポリシーの変更
@@ -8,7 +8,7 @@
 Param(
     [parameter(mandatory=$true)][String]$ConfigFilePath
 )
-. ".\\funcTest.ps1"    # include
+. .\funcTest.ps1    # include
 
 # TEST CODE.
 $fileName = Split-Path -Leaf $ConfigFilePath
@@ -39,19 +39,36 @@ while (($line = $fh.ReadLine()) -ne $null) {
 }
 
 if ($hashConfig.ContainsKey('GitLocalFolderRoot')) {
-    echo "--< cd >---------------"
+    echo "---< cd >-----------------------------------"
     cd $hashConfig['GitLocalFolderRoot']
+    Convert-Path .
     if ($hashConfig.ContainsKey('GitBranch') -and $hashConfig.ContainsKey('GitRemote')) {
-        echo "--< git checkout >---------------"
+
+        echo "---< git checkout >-----------------------------------"
         git checkout $hashConfig['GitBranch']
-        echo "--< git pull >---------------"
+
+        echo "---< git pull >-----------------------------------"
         git pull $hashConfig['GitRemote'] $hashConfig['GitBranch']
-        $strlog = git log -n 1
-        $strlog = $strlog -match "[A-Za-z0-9]{40,}"
-        echo $matches[0] # $strlog"
-        # http://stakiran.hatenablog.com/entry/2018/05/08/195848
-        # https://tortoisegit.org/docs/tortoisegit/tgit-automation.html
-        # "C:\Program Files\TortoiseGit\bin\TortoiseGitProc.exe" /command:log /path:"(ローカルリポジトリのフルパス)"
+
+        echo "---< git now revision(sha1) >------------------------------"
+        $strlog = git log -n 1 --format=%h
+        echo ("SHA1(now/short):"+$strlog)
+        $strlog = git log -n 1 --format=%H
+        echo ("SHA1(now/long):"+$strlog)
+
+        $strRevLong = git rev-parse --branches
+        echo ("SHA1(now/long):"+$strRevLong)
+        $strRevSort = git rev-parse --short $strRevLong
+        echo ("SHA1(now/short):"+$strRevSort)
+
+        echo "---< git diff >------------------------------"
+        git diff --name-only $strRevLong
+        git diff --name-status $strRevLong
+
+
+#        # http://stakiran.hatenablog.com/entry/2018/05/08/195848
+#        # https://tortoisegit.org/docs/tortoisegit/tgit-automation.html
+#        # "C:\Program Files\TortoiseGit\bin\TortoiseGitProc.exe" /command:log /path:"(ローカルリポジトリのフルパス)"
 #        git checkout -b new-branch origin/new-branch
     }
 }
