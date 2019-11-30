@@ -65,6 +65,7 @@ if ($hashConfig.ContainsKey('GitLocalFolderRoot')) {
         git diff --name-only $strRevLong
         git diff --name-status $strRevLong
 
+# git commit . -m "commit msg." # 変更部分をコミット.
 
 #        # http://stakiran.hatenablog.com/entry/2018/05/08/195848
 #        # https://tortoisegit.org/docs/tortoisegit/tgit-automation.html
