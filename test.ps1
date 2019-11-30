@@ -67,6 +67,7 @@ if ($hashConfig.ContainsKey('GitLocalFolderRoot')) {
 
 # git commit . -m "commit msg." # 変更部分をコミット.
 # git push origin develop
+
 #        # http://stakiran.hatenablog.com/entry/2018/05/08/195848
 #        # https://tortoisegit.org/docs/tortoisegit/tgit-automation.html
 #        # "C:\Program Files\TortoiseGit\bin\TortoiseGitProc.exe" /command:log /path:"(ローカルリポジトリのフルパス)"
