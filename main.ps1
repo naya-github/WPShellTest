@@ -28,7 +28,10 @@ $filePath = Split-Path -Parent $ConfigFilePath
 # ファイルを読み込みHash化する.
 $hashConfig = ReadFileAsHash $ConfigFilePath
 
+echo "---< TEST-CODE >-----------------------------------"
 printf "a{1}{0}{2}{3}!!!" "b" "c" "d" 123
+$select = SelectGridWindow "select string!!" @("aaaa","bbbb","cccc")
+echo ("select : "+$select)
 
 echo "---< sha1 >-----------------------------------"
 $c = GetAllMatchedCommitID -branchName1 "origin/develop" -branchName2 "origin/master"

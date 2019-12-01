@@ -39,3 +39,23 @@ function global:printf {
         Write-Host $args
     }
 }
+
+
+# [例] 戻り値を一定の型にするPowerShell特有の処理
+function hoge() {
+    $files = Get-ChildItem -Path "C:¥*.txt"
+    if ($files -eq $null) {
+        $files = @()
+    }
+    if ($files -isnot [System.Object[]]) {
+        $files = , $files
+    }
+    return , $files
+}
+
+# 外部のGridWindowで選択をさせる
+# note : ( １種選択に固定する方法がわからな.... )
+function SelectGridWindow($title, $items) {
+    $out = $items | Out-GridView -Title $title -PassThru
+    Write-Output $out
+}
