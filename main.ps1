@@ -4,6 +4,9 @@
 # Set-ExecutionPolicy による恒久的な実行ポリシーの変更
 # [ PowerShell Set-ExecutionPolicy RemoteSigned ]
 
+# include module (class etc...)
+using module ".\SelectMenuUI.psm1"
+
 # 起動時の引数を指定する.
 Param(
     [parameter(mandatory=$true)][String]$ConfigFilePath
@@ -12,7 +15,6 @@ Param(
 . .\funcTest.ps1
 . .\funcFileReadHash.ps1
 . .\funcGitCommitID.ps1
-#. .\menu.psm1
 
 # win-8.0        ps:3.0
 # win-8.1        ps:4.0
@@ -31,6 +33,8 @@ $hashConfig = ReadFileAsHash $ConfigFilePath
 
 echo "---< TEST-CODE >-----------------------------------"
 printf "a{1}{0}{2}{3}!!!" "b" "c" "d" 123
+$select = SelectMenuUI @("aaaa","bbbb","cccc","dddd") -Index
+echo ("select : "+$select)
 $select = SelectGridWindow "select string!!" @("aaaa","bbbb","cccc")
 echo ("select : "+$select)
 
