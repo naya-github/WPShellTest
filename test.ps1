@@ -8,9 +8,16 @@
 Param(
     [parameter(mandatory=$true)][String]$ConfigFilePath
 )
-. .\funcTest.ps1    # include
+# include
+. .\funcTest.ps1
+. .\funcFileReadHash.ps1
+. .\funcGitCommitID.ps1
 
-Set-StrictMode -Version 5.1 #Latest
+# win-8.0        ps:3.0
+# win-8.1        ps:4.0
+# win-10         ps:5.0
+# win-10(update) ps:5.1 
+Set-StrictMode -Version 3.0 # -Version Latest
 
 # TEST CODE.
 $fileName = Split-Path -Leaf $ConfigFilePath
@@ -18,44 +25,8 @@ $filePath = Split-Path -Parent $ConfigFilePath
 # Write-Host $fileName
 # Write-Host $filePath
 
-# 設定の配列を定義.
-$hashConfig = @{}
-
-# ファイルを１行づつ読み込み処理する.
-$enc = [Text.Encoding]::GetEncoding('utf-8')
-$fh = New-Object System.IO.StreamReader($ConfigFilePath, $enc)
-while (($line = $fh.ReadLine()) -ne $null) {
-    # '#'始まりの行はコメント扱い.
-#    if($line -match "^#") {
-#        echo ("無視:"+$matches[0])
-#        continue
-#    }
-    # '#'以降はコメント扱い.
-    $cell = $line -split "#"
-    $line = $cell[0]
-    # １行の文字列を':'で区切る.
-    $cell = $line -split ":"
-    # 設定が記載されている時.
-    if (($cell.Length -ge 2) -and ($cell -is [array])) {
-        # key以外は再度連結する.
-        $cell[1] = $cell[1..($cell.Length-1)] -join ":"
-        $cell[1] = $cell[1].Trim()    # 前後の空白は削除する.
-        # key文字は空白を詰める
-        $cell[0] = ($cell[0] -replace " ","")
-        # 'Git Repository'は,'Git Remote'に変更.
-        if ($cell[0] -eq 'GitRepository') {
-            $cell[0] = 'GitRemote'
-        }
-        # 設定の配列に格納する.
-        if (-not [String]::IsNullOrWhiteSpace($cell[1])) {
-            if ($hashConfig.ContainsKey($cell[0])){
-                $hashConfig[$cell[0]] = $cell[1]
-            } else {
-                $hashConfig.Add($cell[0], $cell[1])
-            }
-        }
-    }
-}
+# ファイルを読み込みHash化する.
+$hashConfig = ReadFileAsHash $ConfigFilePath
 
 printf "a{1}{0}{2}{3}!!!" "b" "c" "d" 123
 
