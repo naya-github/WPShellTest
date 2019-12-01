@@ -1,4 +1,4 @@
 ﻿Git Repository : #
 Git Remote : origin
-Git Branch : BBBBBBBBBBBBBBBB
+Git Branch : master
 Git Local Folder Root : A:\PPAP
