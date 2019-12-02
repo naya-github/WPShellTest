@@ -18,7 +18,7 @@ PARAMETER には CommonParameters について説明が追加されるので
 関連するリンクの URL を書きます
 https://technet.microsoft.com/ja-jp/library/hh847834.aspx
 #>
-Set-StrictMode -Version 3.0 # -Version Latest
+Set-StrictMode -Version 5.0 # -Version Latest
 
 function global:var_dump($prm1) {
     $prm1 | ForEach-object -Process { Write-Host $_ }

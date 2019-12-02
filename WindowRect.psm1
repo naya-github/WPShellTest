@@ -1,10 +1,17 @@
 ﻿# 参照URL : https://qiita.com/yumura_s/items/f6fa9dbeb5c6c4b6e4fb
 
+# window
+# --
+
 filter Import-WindowRect ($Path)
-{Import-Csv $Path | %{Move-WindowRect $_.Name $_.X $_.Y $_.Width $_.Height}}
+{
+    Import-Csv $Path | %{Move-WindowRect $_.Name $_.X $_.Y $_.Width $_.Height}
+}
 
 filter Export-WindowRect ($Path)
-{Get-Process -Name * | %{Get-WindowRect $_.Name} | Export-Csv $Path -Encoding UTF8 -NoTypeInformation}
+{
+    Get-Process -Name * | %{Get-WindowRect $_.Name} | Export-Csv $Path -Encoding UTF8 -NoTypeInformation
+}
 
 filter Move-WindowRect
 {
@@ -31,21 +38,54 @@ filter Get-WindowRect ([String]$Name)
   }
 }
 
+# desktop
+# --
+
+function GetAppliedDPI
+{
+    $DPISetting = (Get-ItemProperty 'HKCU:\Control Panel\Desktop\WindowMetrics' -Name AppliedDPI).AppliedDPI
+    switch ($DPISetting)
+    {
+        96 {$ActualDPI = 100}
+        120 {$ActualDPI = 125}
+        144 {$ActualDPI = 150}
+        192 {$ActualDPI = 200}
+    }
+
+    Write-Output $ActualDPI
+}
+
+function GetDesktopRect
+{
+    [void][Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
+    $Size = [System.Windows.Forms.SystemInformation]::PrimaryMonitorSize
+    $rct = New-Object RECT
+
+    $rct.Left = 0
+    $rct.Top = 0
+    $rct.Right = $Size.Width
+    $rct.Bottom = $Size.Height
+
+    Write-Output $rct
+}
 
 # Helper
 # ------
 
-filter ConvertTo-Rect2 ($name, $rc)
+function ConvertTo-Rect2 ($name, $rc)
 {
-  $rc2 = New-Object RECT2
+    process
+    {
+        $rc2 = New-Object RECT2
 
-  $rc2.Name = $name
-  $rc2.X = $rc.Left
-  $rc2.Y = $rc.Top
-  $rc2.Width = $rc.Right - $rc.Left
-  $rc2.Height = $rc.Bottom - $rc.Top
+        $rc2.Name = $name
+        $rc2.X = $rc.Left
+        $rc2.Y = $rc.Top
+        $rc2.Width = $rc.Right - $rc.Left
+        $rc2.Height = $rc.Bottom - $rc.Top
 
-  $rc2
+        Write-Output $rc2
+    }
 }
 
 # C#

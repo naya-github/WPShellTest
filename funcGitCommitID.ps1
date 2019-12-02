@@ -1,4 +1,4 @@
-﻿Set-StrictMode -Version 3.0 # -Version Latest
+﻿Set-StrictMode -Version 5.0 # -Version Latest
 
 
 function global:GetLatestMatchedCommitID([string]$branchName1,[string]$branchName2) {

@@ -21,7 +21,7 @@ Param(
 # win-8.1        ps:4.0
 # win-10         ps:5.0
 # win-10(update) ps:5.1 
-Set-StrictMode -Version 3.0 # -Version Latest
+Set-StrictMode -Version 5.0 # -Version Latest
 
 # TEST CODE.
 $fileName = Split-Path -Leaf $ConfigFilePath
@@ -34,11 +34,15 @@ $hashConfig = ReadFileAsHash $ConfigFilePath
 
 echo "---< TEST-CODE >-----------------------------------"
 printf "a{1}{0}{2}{3}!!!" "b" "c" "d" 123
+GetAppliedDPI
+GetDesktopRect
 Get-WindowRect * | ft
 $select = SelectMenuUI @("aaaa","bbbb","cccc","dddd") "msgAAAA?" -Index
 echo ("select : "+$select)
 $select = SelectGridWindow "select string!!" @("aaaa","bbbb","cccc")
 echo ("select : "+$select)
+
+Read-Host -Prompt "Press Enter to next"
 
 echo "---< match sha1(all) >-----------------------------------"
 $c = GetAllMatchedCommitID -branchName1 "origin/develop" -branchName2 "origin/master"
