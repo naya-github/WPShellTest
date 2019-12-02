@@ -1,73 +1,38 @@
 ﻿# 参照URL : https://qiita.com/voidProc/items/4f5de4a7ead70ab0731e
 
-#$ErrorActionPreference = "Stop"
+$ErrorActionPreference = "Inquire" #"Stop"
 
-# Default settings
-if ($MenuPreference -eq $null)
-{
-    $MenuPreference = @{
-        ForegroundColor = "DarkGray"
-        BackgroundColor = "Black"
-        SelectionForegroundColor = "White"
-        SelectionBackgroundColor = "Blue"
-    }
+$RawUI = (Get-Host).UI.RawUI
+
+function New-BgBuffer {
+    $RawUI.NewBufferCellArray(" ", "$($RawUI.ForegroundColor)", "$($RawUI.BackgroundColor)")
 }
 
-$FgColor = $MenuPreference.ForegroundColor
-$BgColor = $MenuPreference.BackgroundColor
-$SelFgColor = $MenuPreference.SelectionForegroundColor
-$SelBgColor = $MenuPreference.SelectionBackgroundColor
-$rui = (Get-Host).UI.RawUI
-$tmp_coord = New-Object System.Management.Automation.Host.Coordinates(0, 0)
-
-
-function New-BgBuffer
-{
-    $rui.NewBufferCellArray(" ", "$($rui.ForegroundColor)", "$($rui.BackgroundColor)")
-}
-
-function New-Coord
-{
-    Param($x, $y)
+function New-Coord($x, $y) {
     New-Object System.Management.Automation.Host.Coordinates($x, $y)
 }
 
-function New-Rect
-{
-    Param($left, $top, $right, $bottom)
+function New-Rect($left, $top, $right, $bottom) {
     New-Object System.Management.Automation.Host.Rectangle($left, $top, $right, $bottom)
 }
 
-function Set-CursorPos
-{
-    Param($x, $y)
-    $tmp_coord.X = $x
-    $tmp_coord.Y = $y
-    (Get-Host).UI.RawUI.CursorPosition = $tmp_coord
+function Set-CursorPos($x, $y) {
+    $tmp = New-Object System.Management.Automation.Host.Coordinates(0, 0)
+    $tmp.X = $x
+    $tmp.Y = $y
+    (Get-Host).UI.RawUI.CursorPosition = $tmp
 }
 
-function Get-SubStringBytes
-{
-    Param($text, $start, $length)
-
+function Get-SubStringBytes($text, $start, $length) {
     $encoding = [System.Text.Encoding]::GetEncoding("utf-8") # "Shift_JIS")
     $bytes = $encoding.GetBytes($text)
     $encoding.GetString($bytes, $start, $length)
 }
 
-function Write-Item
-{
-    Param(
-        [string]$Text,
-        [int]$X,
-        [int]$Y,
-        [int]$W,
-        [bool]$Select
-    )
-
+function Write-Item( [string]$Text, [int]$X, [int]$Y, [int]$W, [bool]$Select) {
     Set-CursorPos $X $Y
 
-    $buf = $rui.NewBufferCellArray($Text, "White", "Black")
+    $buf = $RawUI.NewBufferCellArray($Text, "White", "Black")
     $len = $buf.Length
     if ($len -gt $W) {
         if ($buf[0, ($W-1)].BufferCellType -eq "Leading")
@@ -84,88 +49,60 @@ function Write-Item
 
     $Text = "$Text$(" " * [Math]::Max(0, $W - $len))"
 
-    $fg, $bg = @( @( $FgColor, $BgColor ), @( $SelFgColor, $SelBgColor) )[[int]$Select]
+    $fg, $bg = @( @("DarkGray", "Black"), @("White", "Blue") )[[int]$Select]
 
     Write-Host $Text -ForegroundColor $fg -BackgroundColor $bg -NoNewline | Out-Host
 }
 
-function Show-Menu
+function SelectMenuUI
 {
     Param(
         [Parameter(ValueFromPipeline=$true)]
         [string[]]
         $Items,
-
-        [int]
-        $X = 0,
-
-        [int]
-        $Y = 1,
-
-        [int]
-        $W = 0,
-
+        
         [string]
-        $Cursor = " > ",
+        $Title,
 
-        [ScriptBlock]
-        $OnInit = {},
-        
-        [ScriptBlock]
-        $OnDraw = {
-            Param($idx)
-        },
-        
-        [ScriptBlock]
-        $OnKeyPress = {
-            Param($idx, $keyinfo)
-            $idx, ""
-        },
-        
-        [ScriptBlock]
-        $OnClose = {},
-        
         [switch]
         $Index
     )
 
     begin
     {
-        $Script:MenuItems = New-Object System.Collections.Generic.List[string]
+       $X = 0
+       $Y = 1
+       $W = 0
+       $Cursor = "=> "
+       $Script:MenuItems = New-Object System.Collections.Generic.List[string]
     }
 
     process
     {
-        if ($null -ne $Items)
-        {
+        if ($null -ne $Items) {
             $Items | ForEach-Object { $MenuItems.Add($_) }
         }
     }
 
     end
     {
-        if ($MenuItems.Count -eq 0)
-        {
+        if ($MenuItems.Count -eq 0) {
             return
         }
 
-        $CursorSize = $rui.CursorSize
-        #$rui.CursorSize = 0
+        $CursorSize = $RawUI.CursorSize
 
         # Base position
-        $base_y = $rui.CursorPosition.Y + $Y
+        $base_y = $RawUI.CursorPosition.Y + $Y
 
-        if (!$W) { $W = $rui.WindowSize.Width }
-        $W = [Math]::Min($W, $rui.WindowSize.Width - $X)
+        $wmax = $RawUI.WindowSize.Width - $X
+        if (($W -le 0) -or ($wmax -lt $W)) {
+            $W = $wmax
+        }
 
-        & $OnInit
+        # title.
+        Write-Host $Title
 
-        # Draw menu BG
-        $menurect = New-Rect $X $base_y ($X + $W) ($base_y + $MenuItems.Count-1)
-
-        # BG
-        $bgbuf = New-BgBuffer
-Write-Host "TITLE:AAAAAAAAAAAAAAA??"
         # Selected item
         $idx = 0
         $idxp = 0
@@ -191,23 +128,9 @@ Write-Host "TITLE:AAAAAAAAAAAAAAA??"
 
             Set-CursorPos $X ($base_y + $MenuItems.Count)
 
-            . $OnDraw $idx
-
             $keyinfo = [Console]::ReadKey($true)
 
             $idxp = $idx
-            $idx, $op = . $OnKeyPress $idx $keyinfo
-            switch ($op.ToLower())
-            {
-                "select" {
-                    break readkeyloop
-                }
-
-                "cancel" {
-                    $cancel = $true
-                    break readkeyloop
-                }
-            }
 
             switch ($keyinfo.Key)
             {
@@ -232,16 +155,14 @@ Write-Host "TITLE:AAAAAAAAAAAAAAA??"
             }
         }
 
-        . $OnClose
-
         # Clear menu
-#        $rui.SetBufferContents($menurect, $bgbuf)
-$clearrect = New-Rect $X ($base_y-1) ($X + $W) ($base_y + $MenuItems.Count)
-$rui.SetBufferContents($clearrect, $bgbuf)
+        $clearrect = New-Rect $X ($base_y-1) ($X + $W) ($base_y + $MenuItems.Count)
+        $bgbuf = New-BgBuffer
+        $RawUI.SetBufferContents($clearrect, $bgbuf)
 
         # Back Cursor
         Set-CursorPos 0 ($base_y - $Y)
-        $rui.CursorSize = $CursorSize
+        $RawUI.CursorSize = $CursorSize
 
         # Result
         if (-not $cancel)
@@ -257,8 +178,6 @@ $rui.SetBufferContents($clearrect, $bgbuf)
     }
 }
 
-#Set-Alias -Name menu -Value Show-Menu
-Set-Alias -Name SelectMenuUI -Value Show-Menu
-
-#Export-ModuleMember -Function Show-Menu -Alias menu
-Export-ModuleMember -Function Show-Menu -Alias SelectMenuUI
+#Set-Alias -Name menu -Value SelectMenuUI
+#Export-ModuleMember -Function SelectMenuUI -Alias menu
+Export-ModuleMember -Function SelectMenuUI

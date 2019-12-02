@@ -6,6 +6,7 @@
 
 # include module (class etc...)
 using module ".\SelectMenuUI.psm1"
+using module ".\WindowRect.psm1"
 
 # 起動時の引数を指定する.
 Param(
@@ -33,7 +34,8 @@ $hashConfig = ReadFileAsHash $ConfigFilePath
 
 echo "---< TEST-CODE >-----------------------------------"
 printf "a{1}{0}{2}{3}!!!" "b" "c" "d" 123
-$select = SelectMenuUI @("aaaa","bbbb","cccc","dddd") -Index
+Get-WindowRect * | ft
+$select = SelectMenuUI @("aaaa","bbbb","cccc","dddd") "msgAAAA?" -Index
 echo ("select : "+$select)
 $select = SelectGridWindow "select string!!" @("aaaa","bbbb","cccc")
 echo ("select : "+$select)
