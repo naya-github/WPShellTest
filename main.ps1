@@ -5,8 +5,10 @@
 # [ PowerShell Set-ExecutionPolicy RemoteSigned ]
 
 # include module (class etc...)
-using module ".\SelectMenuUI.psm1"
+using module ".\PathHelper.psm1"
 using module ".\WindowRect.psm1"
+using module ".\SelectMenuUI.psm1"
+using module ".\ProgressUI.psm1"
 
 # 起動時の引数を指定する.
 Param(
@@ -14,7 +16,8 @@ Param(
 )
 # include
 . .\funcTest.ps1
-. .\funcFileReadHash.ps1
+. .\funcLog.ps1
+. .\funcFileHash.ps1
 . .\funcGitCommitID.ps1
 
 # win-8.0        ps:3.0
@@ -22,6 +25,8 @@ Param(
 # win-10         ps:5.0
 # win-10(update) ps:5.1 
 Set-StrictMode -Version 5.0 # -Version Latest
+
+$ErrorActionPreference = "Inquire" #"Stop"
 
 # TEST CODE.
 $fileName = Split-Path -Leaf $ConfigFilePath
@@ -31,6 +36,15 @@ $filePath = Split-Path -Parent $ConfigFilePath
 
 # ファイルを読み込みHash化する.
 $hashConfig = ReadFileAsHash $ConfigFilePath
+
+# SET Encoding
+$OutputEncoding = $hashConfig['PSEncod'] # 'utf-8'
+
+echo "---< Log >-----------------------------------"
+# start log.
+StartLog ($hashConfig['PSLogPath'], $hashConfig['PSLogAppend'])
+# Stop log.
+StopLog
 
 echo "---< TEST-CODE >-----------------------------------"
 printf "a{1}{0}{2}{3}!!!" "b" "c" "d" 123
@@ -44,13 +58,14 @@ echo ("select : "+$select)
 
 Read-Host -Prompt "Press Enter to next"
 
-echo "---< match sha1(all) >-----------------------------------"
-$c = GetAllMatchedCommitID -branchName1 "origin/develop" -branchName2 "origin/master"
+echo "---< match sha1(first) >-----------------------------------"
+$c = GetFirstMatchedCommitID "origin/develop" "origin/master"
 var_dump $c
 echo "---< match sha1(latest) >-----------------------------------"
 $c = GetLatestMatchedCommitID -branchName1 "origin/develop" -branchName2 "origin/master"
 var_dump $c
 
+Read-Host -Prompt "Press Enter to next"
 
 if ($hashConfig.ContainsKey('GitLocalFolderRoot')) {
     echo "---< cd >-----------------------------------"

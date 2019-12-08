@@ -1,6 +1,6 @@
 ﻿# 参照URL : https://qiita.com/voidProc/items/4f5de4a7ead70ab0731e
 
-$ErrorActionPreference = "Inquire" #"Stop"
+# $ErrorActionPreference = "Inquire" #"Stop"
 
 $RawUI = (Get-Host).UI.RawUI
 

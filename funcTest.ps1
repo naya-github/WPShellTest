@@ -40,6 +40,31 @@ function global:printf {
     }
 }
 
+function global:ToBool( $prm1 ) {
+    try {
+      $result = [System.Convert]::ToBoolean($prm1) 
+    }
+    catch [Exception] {
+        try {
+            $prm1 = $([string]$prm1).ToLower()
+            $result = [System.Xml.XmlConvert]::ToBoolean($prm1)
+        }
+        catch [FormatException] {
+            $result = $false
+        }
+        # 覚書.....(笑)...
+        catch [InvalidCastException],[OverflowException],[ArgumentNullException],[Exception] {
+            $result = $false
+        }
+    }
+    Write-Output $result
+}
+
+
+
+#------------------
+# メモ書き...
+#------------------
 
 # [例] 戻り値を一定の型にするPowerShell特有の処理
 function hoge() {
