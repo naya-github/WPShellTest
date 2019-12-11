@@ -14,7 +14,8 @@ function global:StartLog([string]$filePath, $append)
         $logFile = $filePath
     }
     # log 開始.
-    if (ToBool $append) {
+    $flag = ToBool $append
+    if ($flag) {
         Start-Transcript $logFile -Append
     }
     else {
