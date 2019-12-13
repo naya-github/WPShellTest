@@ -2,7 +2,7 @@
 
 Set-StrictMode -Version 5.0 # -Version Latest
 
-function global:StartLog([string]$filePath, $append)
+function global:StartLog([string]$filePath, $append=$true)
 {
     $logFile = ""
     # フォルダ指定での自動ファイル名生成.
