@@ -9,6 +9,7 @@ using module ".\PathHelper.psm1"
 using module ".\WindowRect.psm1"
 using module ".\SelectMenuUI.psm1"
 using module ".\ProgressUI.psm1"
+using module ".\TypeHelper.psm1"
 
 # 起動時の引数を指定する.
 Param(
@@ -19,7 +20,8 @@ Param(
 . .\funcLog.ps1
 . .\funcFile.ps1
 . .\funcGitCommitID.ps1
-. .\DialogInputWindow.ps1
+. .\funcDialogInputWindow.ps1
+. .\funcSelectGridWindow.ps1
 
 # win-8.0        ps:3.0
 # win-8.1        ps:4.0

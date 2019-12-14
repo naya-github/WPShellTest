@@ -40,26 +40,6 @@ function global:printf {
     }
 }
 
-function global:ToBool( $prm1 ) {
-    try {
-      $result = [System.Convert]::ToBoolean($prm1) 
-    }
-    catch [Exception] {
-        try {
-            $prm1 = $([string]$prm1).ToLower()
-            $result = [System.Xml.XmlConvert]::ToBoolean($prm1)
-        }
-        catch [FormatException] {
-            $result = $false
-        }
-        # 覚書.....(笑)...
-        catch [InvalidCastException],[OverflowException],[ArgumentNullException],[Exception] {
-            $result = $false
-        }
-    }
-    Write-Output $result
-}
-
 
 
 #------------------
@@ -76,26 +56,4 @@ function hoge() {
         $files = , $files
     }
     return , $files
-}
-
-# 外部のGridWindowで選択をさせる
-# note : ( １種選択に固定する方法がわからな.... )
-function SelectGridWindow($title, $items) {
-    $out = $items | Out-GridView -Title $title -PassThru
-    Write-Output $out
-}
-
-# [例] PS内部でDialogっぽい感じで選択させる.
-function SelectDialogUI {
-#選択肢の作成
-$typename = "System.Management.Automation.Host.ChoiceDescription"
-$yes = new-object $typename("&Yes","実行する")
-$no  = new-object $typename("&No","実行しない")
-
-#選択肢コレクションの作成
-$choice = [System.Management.Automation.Host.ChoiceDescription[]]($yes,$no)
-
-#選択プロンプトの表示
-$answer = $host.ui.PromptForChoice("<実行確認>","実行しますか？",$choice,0)
-Write-Output $answer
 }
