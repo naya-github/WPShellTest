@@ -20,7 +20,6 @@ Param(
 . .\funcLog.ps1
 . .\funcFile.ps1
 . .\funcGitCommitID.ps1
-. .\funcDialogInputWindow.ps1
 . .\funcSelectGridWindow.ps1
 
 # win-8.0        ps:3.0
@@ -31,50 +30,37 @@ Set-StrictMode -Version 5.0 # -Version Latest
 
 $ErrorActionPreference = "Inquire" #"Stop"
 
+[int]$i = $null
+echo $i
+[int]$i = 0
+echo $i
 echo "---< JSON-CODE >-----------------------------------"
-$jsonConfigFile = ".\config.json"
-$json = Get-Content $jsonConfigFile | Out-String | ConvertFrom-Json
-    $json3 = Get-Content $jsonConfigFile | Out-String | ConvertFrom-Json
-echo $json.Config.PSEncod
-# NoteProperty は、オブジェクトに静的な値を持つメンバーを追加するために使いま
-$json.Config | Add-Member -MemberType NoteProperty -Name "NNN" -Value "hoge"
-$json.Config | Add-Member -MemberType NoteProperty -Name "AAA" -Value 117
-$json.Config | Add-Member -MemberType NoteProperty -Name "Config" -Value $json3.Config
-# $json.RequestList[0] | Add-Member -NotePropertyMembers @($json3.RequestList)
-$json.RequestList[0] | Add-Member -MemberType NoteProperty -Name "Array_Length" -Value 3
-$json.RequestList[0] | Add-Member -MemberType NoteProperty -Name "Array_0" -Value "111"
-$json.RequestList[0] | Add-Member -MemberType NoteProperty -Name "Array_1" -Value "222"
-$json.RequestList[0] | Add-Member -MemberType NoteProperty -Name "Array_2" -Value "333"
-for($i=0;$i -lt ($json.RequestList[0].('Array'+'_Length'));$i += 1){
-    echo ($json.RequestList[0].('Array'+'_'+$i))
+$json = ReadJson $ConfigFilePath
+
+AddMember $json.PS "NNN" "hoge"
+RemoveMember $json.PS "NNN"
+
+WriteJson $json $json.RequestList[0].File
+
+$array = @(111,222,333)
+AddMemberArray $json.RequestList[0] "Array" $array
+for($i=0;$i -lt (GetMemberArray $json.RequestList[0] 'Array' 'Length');$i += 1){
+    echo (GetMemberArray $json.RequestList[0] 'Array' $i)
 }
-
-echo $json.Config.NNN
-echo $json.Config.AAA
-echo $json.Config.Config.GitLocalFolderRoot
-$json.RequestList | Get-Member
-
-$json.Config.PSObject.Properties.Remove('AAA')
-$json2 = $json | ConvertTo-Json
-echo $json2
+RemoveMemberArray $json.RequestList[0] "Array"
 
 Read-Host -Prompt "Press Enter to next"
 
 # TEST CODE.
-$fileName = Split-Path -Leaf $ConfigFilePath
-$filePath = Split-Path -Parent $ConfigFilePath
-# Write-Host $fileName
-# Write-Host $filePath
-
-# ファイルを読み込みHash化する.
-$hashConfig = ReadFileAsHash $ConfigFilePath
+# $fileName = Split-Path -Leaf $ConfigFilePath
+# $filePath = Split-Path -Parent $ConfigFilePath
 
 # SET Encoding
-$OutputEncoding = $hashConfig['PSEncod'] # 'utf-8'
+$OutputEncoding = $json.PS.Encod # 'utf-8'
 
 echo "---< Log >-----------------------------------"
 # start log.
-StartLog $hashConfig['PSLogPath'] $hashConfig['PSLogAppend']
+StartLog $json.PS.LogPath $json.PS.LogAppend
 # Stop log.
 StopLog
 
