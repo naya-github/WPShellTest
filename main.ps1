@@ -7,6 +7,7 @@
 # include module (class etc...)
 using module ".\PathHelper.psm1"
 using module ".\WindowRect.psm1"
+using module ".\InputUI.psm1"
 using module ".\SelectMenuUI.psm1"
 using module ".\ProgressUI.psm1"
 using module ".\TypeHelper.psm1"
@@ -30,10 +31,6 @@ Set-StrictMode -Version 5.0 # -Version Latest
 
 $ErrorActionPreference = "Inquire" #"Stop"
 
-[int]$i = $null
-echo $i
-[int]$i = 0
-echo $i
 echo "---< JSON-CODE >-----------------------------------"
 $json = ReadJson $ConfigFilePath
 
@@ -69,20 +66,9 @@ printf "a{1}{0}{2}{3}!!!" "b" "c" "d" 123
 GetAppliedDPI
 GetDesktopRect
 Get-WindowRect * | ft
-$select = DialogInputWindow ("AAAAAAAA","BBBBBBBBB")
-echo ("input : "+$select)
 
-# https://soma-engineering.com/coding/powershell/use-readhost-command/2018/05/24/
-[datetime]$date = Read-Host "入社年月日を入力してください。Date-Format: yyyy/mm/dd"
-$date
-$password = Read-Host "パスワードを入力してください。" -AsSecureString
-$password
-[ValidateLength(6,8)]$username = [String](Read-Host "ユーザー名を入力してください。")
-$username
-[ValidateRange(1,9999)]$staff_id = [int](Read-Host "社員番号を入力してください。")
-$staff_id
-[ValidateSet("y","Y","n","N")]$responce = Read-Host "この PC はノートパソコンですか？(y か n を入力して Enter 押下)"
-$responce
+$i = InputUI "入力して!!" UI_Range
+echo ("input : "+$i)
 
 $select = SelectMenuUI @("aaaa","bbbb","cccc","dddd") "msgAAAA?" -Index
 echo ("select : "+$select)
