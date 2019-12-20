@@ -1,0 +1,21 @@
+﻿
+{
+    "PS":{
+        "Encod":"utf-8",
+        "LogPath":".\\Log\\",
+        "LogAppend":0
+    },
+    "Git":{
+        "LocalFolderRoot":"."
+    },
+    "RequestList":[
+        {
+            "Name":"1001",
+            "File":".\\feature\\1001.json"
+        },
+        {
+            "Name":"1002",
+            "File":".\\feature\\1002.json"
+        }
+    ]
+}

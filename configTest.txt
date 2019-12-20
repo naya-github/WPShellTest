@@ -1,4 +1,7 @@
 ﻿Git Repository : #
 Git Remote : origin
-Git Branch : BBBBBBBBBBBBBBBB
+Git Branch : master
 Git Local Folder Root : A:\PPAP
+PS Encod : utf-8
+PS Log Path : A:\PPAP\log.txt
+PS Log Append : false
