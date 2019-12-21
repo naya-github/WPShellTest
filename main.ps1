@@ -23,6 +23,7 @@ Param(
 . .\funcLog.ps1
 . .\funcFile.ps1
 . .\funcGitCommitID.ps1
+. .\funcSelectDialogUI.ps1
 . .\funcSelectGridWindow.ps1
 
 # win-10         ps:5.0
@@ -37,9 +38,11 @@ StartLog $json.PS.LogPath $json.PS.LogAppend
 # SET Encoding
 $OutputEncoding = $json.PS.Encod # 'utf-8'
 
+echo "`n"
+
 if ($json.Git.LocalFolderRoot) {
     # move current folder.
-    Push-Location $json.GitLocalFolderRoot
+    Push-Location $json.Git.LocalFolderRoot
     echo ("current : "+(Convert-Path .))
     # local branch
     $nb = git rev-parse --abbrev-ref HEAD
@@ -47,11 +50,39 @@ if ($json.Git.LocalFolderRoot) {
     # now ID
     $nowID = git log -n 1 --format=%H
     echo ("git commit ID(SHA1) : "+$nowID)
+    # 日本語設定を確認する
+    $gc_cq = git config --local core.quotepath
+    $gc_cp = git config --local core.pager
+    echo ("Gitの日本語設定 [ pager="+$gc_cp+", quotepath="+$gc_cq+" ]")
+    # 日本語設定を追加する
+    if ($gc_cq -ne "false" -or $gc_cp -ne "LC_ALL=ja_JP.UTF-8 less -Sx4") {
+        $re = SelectDialogUI "Git Config(local) の設定を変えますか？"
+        if ($re -eq 0) {
+            git config --local core.quotepath false
+            git config --local core.pager "LC_ALL=ja_JP.UTF-8 less -Sx4"
+            echo "設定変更しました「Git Config --local」"
+        }
+    }
 
-    Read-Host -Prompt "Press Enter to next"
+    # コミット忘れ(ファイル名)
+    $a1 = git diff --name-only HEAD
+    if ($a1) {
+        echo "`n"
+        echo "コミット忘れてませんか？"
+        echo (($a1 -join ", ")+"`n")
+    }
+    # 未プッシュの確認(sha1)
+    $a2 = git log origin/develop..HEAD --format=%H
+    if ($a2) {
+        echo "プッシュ忘れてませんか？"
+        echo "SHA-1 list."
+        echo $a2
+        echo "`n"
+    }
 
-    # コミット＆プッシュしてない変更があるか？
-    # 有ると、切り替えできない.
+    if ($a1 -or $a2) {
+        Read-Host -Prompt "処理を続けますか？(Press Enter to next?)"
+    }
 
     # log に日付対応の機能を追加.
     # json のリストにも日付を追加.
