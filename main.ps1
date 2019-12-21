@@ -19,7 +19,6 @@ Param(
 )
 
 # include
-. .\funcTest.ps1
 . .\funcLog.ps1
 . .\funcFile.ps1
 . .\funcGitCommitID.ps1
@@ -50,6 +49,7 @@ if ($json.Git.LocalFolderRoot) {
     # now ID
     $nowID = git log -n 1 --format=%H
     echo ("git commit ID(SHA1) : "+$nowID)
+
     # 日本語設定を確認する
     $gc_cq = git config --local core.quotepath
     $gc_cp = git config --local core.pager
