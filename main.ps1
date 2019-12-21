@@ -53,8 +53,8 @@ if ($json.Git.LocalFolderRoot) {
     # 日本語設定を確認する
     $gc_cq = git config --local core.quotepath
     $gc_cp = git config --local core.pager
-    echo ("Gitの日本語設定 [ pager="+$gc_cp+", quotepath="+$gc_cq+" ]")
-    # 日本語設定を追加する
+    echo ("Gitの言語設定 [ pager="+$gc_cp+", quotepath="+$gc_cq+" ]")
+    # 日本語設定を追加(完全ではない....)
     if ($gc_cq -ne "false" -or $gc_cp -ne "LC_ALL=ja_JP.UTF-8 less -Sx4") {
         $re = SelectDialogUI "Git Config(local) の設定を変えますか？"
         if ($re -eq 0) {
@@ -69,18 +69,19 @@ if ($json.Git.LocalFolderRoot) {
     if ($a1) {
         echo "`n"
         echo "コミット忘れてませんか？"
-        echo (($a1 -join ", ")+"`n")
+        echo ($a1 -join ", ")
     }
     # 未プッシュの確認(sha1)
     $a2 = git log origin/develop..HEAD --format=%H
     if ($a2) {
+        echo "`n"
         echo "プッシュ忘れてませんか？"
         echo "SHA-1 list."
         echo $a2
-        echo "`n"
     }
 
     if ($a1 -or $a2) {
+        echo "`n"
         Read-Host -Prompt "処理を続けますか？(Press Enter to next?)"
     }
 
