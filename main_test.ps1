@@ -62,7 +62,7 @@ StartLog $json.PS.LogPath $json.PS.LogAppend
 StopLog
 
 echo "---< TEST-CODE >-----------------------------------"
-printf "a{1}{0}{2}{3}!!!" "b" "c" "d" 123
+print "a{1}{0}{2}{3}!!!" "b" "c" "d" 123
 GetAppliedDPI
 GetDesktopRect
 Get-WindowRect * | ft

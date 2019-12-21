@@ -24,7 +24,7 @@ function global:var_dump($prm1) {
     $prm1 | ForEach-object -Process { Write-Host $_ }
 }
 
-function global:printf {
+function global:print {
     if($args -is [array]) {
         if($args.Length -ge 2) {
             $prm1 = $args[0];
