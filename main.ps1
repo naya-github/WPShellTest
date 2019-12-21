@@ -1,0 +1,121 @@
+﻿# ExecutionPolicy オプションによる実行ポリシーの変更
+# [ PowerShell -ExecutionPolicy RemoteSigned ]
+# or
+# Set-ExecutionPolicy による恒久的な実行ポリシーの変更
+# [ PowerShell Set-ExecutionPolicy RemoteSigned ]
+# デフォルト : Set-ExecutionPolicy Restricted
+
+# include module (class etc...)
+using module ".\PathHelper.psm1"
+using module ".\WindowRect.psm1"
+using module ".\InputUI.psm1"
+using module ".\SelectMenuUI.psm1"
+using module ".\ProgressUI.psm1"
+using module ".\TypeHelper.psm1"
+
+# 起動時の引数を指定する.
+Param(
+    [parameter(mandatory=$true)][String]$ConfigFilePath
+)
+
+# include
+. .\funcTest.ps1
+. .\funcLog.ps1
+. .\funcFile.ps1
+. .\funcGitCommitID.ps1
+. .\funcSelectGridWindow.ps1
+
+# win-10         ps:5.0
+Set-StrictMode -Version 5.0 # -Version Latest
+
+$ErrorActionPreference = "Inquire" #"Stop"
+
+# load config[json]
+$json = ReadJson $ConfigFilePath
+# start log.
+StartLog $json.PS.LogPath $json.PS.LogAppend
+# SET Encoding
+$OutputEncoding = $json.PS.Encod # 'utf-8'
+
+if ($json.Git.LocalFolderRoot) {
+    # move current folder.
+    Push-Location $json.GitLocalFolderRoot
+    echo ("current : "+(Convert-Path .))
+    # local branch
+    $nb = git rev-parse --abbrev-ref HEAD
+    echo ("git branch : "+$nb)
+    # now ID
+    $nowID = git log -n 1 --format=%H
+    echo ("git commit ID(SHA1) : "+$nowID)
+
+    Read-Host -Prompt "Press Enter to next"
+
+    # コミット＆プッシュしてない変更があるか？
+    # 有ると、切り替えできない.
+
+    # log に日付対応の機能を追加.
+    # json のリストにも日付を追加.
+
+    # move curent folder.
+    Pop-Location
+}
+
+# Stop log.
+StopLog
+
+pause
+exit 1
+
+
+echo "---< match sha1(first) >-----------------------------------"
+$c = GetFirstMatchedCommitID "origin/develop" "origin/master"
+var_dump $c
+echo "---< match sha1(latest) >-----------------------------------"
+$c = GetLatestMatchedCommitID -branchName1 "origin/develop" -branchName2 "origin/master"
+var_dump $c
+
+Read-Host -Prompt "Press Enter to next"
+
+if ($hashConfig.ContainsKey('GitLocalFolderRoot')) {
+    echo "---< cd >-----------------------------------"
+    cd $hashConfig['GitLocalFolderRoot']
+    Convert-Path .
+
+    # 現在のlocal-branch
+    git rev-parse --abbrev-ref HEAD
+
+    if ($hashConfig.ContainsKey('GitBranch') -and $hashConfig.ContainsKey('GitRemote')) {
+
+        echo "---< git checkout >-----------------------------------"
+        git checkout $hashConfig['GitBranch']
+
+        echo "---< git pull >-----------------------------------"
+        git pull $hashConfig['GitRemote'] $hashConfig['GitBranch']
+
+        echo "---< git now revision(sha1) >------------------------------"
+        $strlog = git log -n 1 --format=%h
+        echo ("SHA1(now/short):"+$strlog)
+        $strlog = git log -n 1 --format=%H
+        echo ("SHA1(now/long):"+$strlog)
+
+        $strRevLong = git rev-parse --branches
+        echo ("SHA1(now/long):"+$strRevLong)
+        $strRevSort = git rev-parse --short $strRevLong
+        echo ("SHA1(now/short):"+$strRevSort)
+
+        echo "---< git diff >------------------------------"
+        git diff --name-only $strRevLong
+        git diff --name-status $strRevLong
+
+# git commit . -m "commit msg." # 変更部分をコミット.
+# git push origin develop
+
+#        # http://stakiran.hatenablog.com/entry/2018/05/08/195848
+#        # https://tortoisegit.org/docs/tortoisegit/tgit-automation.html
+#        # "C:\Program Files\TortoiseGit\bin\TortoiseGitProc.exe" /command:log /path:"(ローカルリポジトリのフルパス)"
+#        git checkout -b new-branch origin/new-branch
+    }
+}
+
+pause
+exit 1
