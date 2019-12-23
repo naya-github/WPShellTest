@@ -26,3 +26,9 @@ Pop-Location
 —á‚¦‚ÎŸ‚Ì‚æ‚¤‚Ég—p‚µ‚Ü‚·B
 git log --after '2008/10/05' --before '2008/10/23'
 
+
+
+# PowerShell by SSH.
+# https://stackoverflow.com/questions/52113738/starting-ssh-agent-on-windows-10-fails-unable-to-start-ssh-agent-service-erro
+Get-Service -Name ssh-agent | Set-Service -StartupType Manual
+

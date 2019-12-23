@@ -19,6 +19,7 @@ Param(
 )
 
 # include
+. .\lib\function\funcPrint.ps1
 . .\lib\function\funcLog.ps1
 . .\lib\function\funcFile.ps1
 . .\lib\function\funcGitCommitID.ps1
@@ -71,6 +72,10 @@ if ($json.Git.LocalFolderRoot) {
         echo "コミット忘れてませんか？"
         echo ($a1 -join ", ")
     }
+
+$nowBranchName = git rev-parse --abbrev-ref HEAD
+$nowRemoteNameList = git remote
+
     # 未プッシュの確認(sha1)
     $a2 = git log origin/develop..HEAD --format=%H
     if ($a2) {
