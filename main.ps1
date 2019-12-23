@@ -88,6 +88,7 @@ if ($json.Git.LocalFolderRoot) {
 # TODO: 複数出るので比較検索するしかないかな・・・？
 	$nowRemoteNameList = git remote
     if ($nowRemoteNameList -is [array]) {
+        $msg = "現在のブランチ名「"+$nowBranchName+"」：Remoteはどれですか？"
         $nowRemoteName = SelectMenuUI $nowRemoteNameList "Which remote is local?" -Index
     } else {
         $nowRemoteName = $nowRemoteNameList
