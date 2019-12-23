@@ -6,12 +6,12 @@
 # デフォルト : Set-ExecutionPolicy Restricted
 
 # include module (class etc...)
-using module ".\PathHelper.psm1"
-using module ".\WindowRect.psm1"
-using module ".\InputUI.psm1"
-using module ".\SelectMenuUI.psm1"
-using module ".\ProgressUI.psm1"
-using module ".\TypeHelper.psm1"
+using module ".\lib\module\PathHelper.psm1"
+using module ".\lib\module\WindowRect.psm1"
+using module ".\lib\module\InputUI.psm1"
+using module ".\lib\module\SelectMenuUI.psm1"
+using module ".\lib\module\ProgressUI.psm1"
+using module ".\lib\module\TypeHelper.psm1"
 
 # 起動時の引数を指定する.
 Param(
@@ -19,11 +19,11 @@ Param(
 )
 
 # include
-. .\funcLog.ps1
-. .\funcFile.ps1
-. .\funcGitCommitID.ps1
-. .\funcSelectDialogUI.ps1
-. .\funcSelectGridWindow.ps1
+. .\lib\function\funcLog.ps1
+. .\lib\function\funcFile.ps1
+. .\lib\function\funcGitCommitID.ps1
+. .\lib\function\funcSelectDialogUI.ps1
+. .\lib\function\funcSelectGridWindow.ps1
 
 # win-10         ps:5.0
 Set-StrictMode -Version 5.0 # -Version Latest
