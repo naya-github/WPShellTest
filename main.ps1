@@ -87,9 +87,14 @@ if ($json.Git.LocalFolderRoot) {
 
 # TODO: 複数出るので比較検索するしかないかな・・・？
 	$nowRemoteNameList = git remote
+    if ($nowRemoteNameList -is [array]) {
+        $nowRemoteName = SelectMenuUI $nowRemoteNameList "Which remote is local?" -Index
+    } else {
+        $nowRemoteName = $nowRemoteNameList
+    }
 
     # 未プッシュの確認(sha1)
-    $a2 = git log ('origin'+'/'+$nowBranchName)..HEAD --format=%H
+    $a2 = git log ($nowRemoteName+'/'+$nowBranchName)..HEAD --format=%H
     if ($a2) {
         echo "`n"
         echo "プッシュ忘れてませんか？"
@@ -104,6 +109,10 @@ if ($json.Git.LocalFolderRoot) {
 
     # log に日付対応の機能を追加.
     # json のリストにも日付を追加.
+$c = GetFirstMatchedCommitID "origin/develop" "origin/master"
+print $c
+$c = GetLatestMatchedCommitID "origin/develop" "origin/master"
+print $c
 
     # move curent folder.
     Pop-Location
