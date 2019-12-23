@@ -3,10 +3,12 @@
         "Encod":"utf-8",
         "LogPath":".\\Log\\",
         "LogAppend":0,
-        "RequestFolderPath":".\\REQ"
+        "RequestFolderPath":".\\Request"
     },
     "Git":{
         "LocalFolderRoot":"A:\\Gitter\\AndroidProject",
+        "PuttyPageant":"C:\\Program Files\\TortoiseGit\\bin\\pageant.exe",
+		"SshPrivateKey":"C:\\Users\\UserName\\.ssh\\id_rsa",
         "OriginRemote":"origin",
         "MasterBranch":"master",
         "DevelopBranch":"develop",
@@ -21,7 +23,7 @@
     	{ "ID":4, "Name":"開発レビュー中" },
     	{ "ID":5, "Name":"反映待ち" },
     	{ "ID":6, "Name":"反映済み" },
-    	{ "ID":7, "Name":"完了" },
+    	{ "ID":7, "Name":"完了" }
     ],
     "RequestList":[
         "203",

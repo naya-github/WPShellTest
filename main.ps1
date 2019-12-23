@@ -40,6 +40,15 @@ $OutputEncoding = $json.PS.Encod # 'utf-8'
 
 echo "`n"
 
+# 起動:[SSH]Putty
+if ($json.Git.SshPrivateKey) {
+	&$json.Git.PuttyPageant $json.Git.SshPrivateKey
+	echo "[SSH] Putty/Pageant 起動!!"
+	Read-Host -Prompt "処理を続けますか？(Press Enter to next?)"
+}
+
+echo "`n"
+
 if ($json.Git.LocalFolderRoot) {
     # move current folder.
     Push-Location $json.Git.LocalFolderRoot
@@ -65,6 +74,9 @@ if ($json.Git.LocalFolderRoot) {
         }
     }
 
+	# 現在のLocalのBranch名.
+	$nowBranchName = git rev-parse --abbrev-ref HEAD
+
     # コミット忘れ(ファイル名)
     $a1 = git diff --name-only HEAD
     if ($a1) {
@@ -73,11 +85,11 @@ if ($json.Git.LocalFolderRoot) {
         echo ($a1 -join ", ")
     }
 
-$nowBranchName = git rev-parse --abbrev-ref HEAD
-$nowRemoteNameList = git remote
+# TODO: 複数出るので比較検索するしかないかな・・・？
+	$nowRemoteNameList = git remote
 
     # 未プッシュの確認(sha1)
-    $a2 = git log origin/develop..HEAD --format=%H
+    $a2 = git log ('origin'+'/'+$nowBranchName)..HEAD --format=%H
     if ($a2) {
         echo "`n"
         echo "プッシュ忘れてませんか？"

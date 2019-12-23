@@ -1,4 +1,4 @@
-﻿using module ".\ProgressUI.psm1"
+﻿using module "..\module\ProgressUI.psm1"
 
 Set-StrictMode -Version 5.0 # -Version Latest
 

@@ -1,4 +1,4 @@
-﻿using module ".\PathHelper.psm1"
+﻿using module "..\module\PathHelper.psm1"
 
 Set-StrictMode -Version 5.0 # -Version Latest
 
