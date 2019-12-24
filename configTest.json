@@ -11,9 +11,10 @@
 		"SshPrivateKey":"C:\\Users\\UserName\\.ssh\\id_rsa",
         "OriginRemote":"origin",
         "OriginBranch":[
-            { "Key":"Master", "Value":"master" },
-            { "Key":"Develop", "Value":"develop" },
-            { "Key":"Trial", "Value":"trial" }
+        	{ "Key":"Master", "Value":"master" },
+        	{ "Key":"Develop", "Value":"develop" },
+        	{ "Key":"Trial", "Value":"debug" },
+        	{ "Key":"Fork", "Value":"fork" }
         ]
     },
     "CompList":[

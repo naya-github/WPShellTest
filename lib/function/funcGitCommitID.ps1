@@ -7,11 +7,20 @@ function global:GetFirstMatchedCommitID
 {
     Param(
 		[string]$branchName,
-        [string]$originBranchName = ""
+        [string]$originBranchName = "",
+        $after = '',
+        $before = ''
 	)
     $max = 10
     $hash = @{}
     $backup = @{}
+
+    $after = [DateTime]::ParseExact($after,"yyyy/MM/dd", $null)
+    $before = [DateTime]::ParseExact($before,"yyyy/MM/dd", $null)
+# $dt3 = $dt2 - $dt1;
+# Write-Host $dt3.Days; 
+    $after = $after.ToString("yyyy/MM/dd")
+    $before = $before.ToString("yyyy/MM/dd")
 
     $count = 0
     $maxcount = 0
@@ -21,7 +30,11 @@ function global:GetFirstMatchedCommitID
         $pui.UpdateUI("s1. Get-Log SHA1[$max]")
         # LogのSHA1配列を取得.
         $skip = '--skip=' + $count
-        $idList = @(git log $branchName -n $max $skip --first-parent --format=%H)
+        if ($after) {
+            $idList = @(git log $branchName -n $max $skip --first-parent --format=%H --after $after)
+        } else {
+            $idList = @(git log $branchName -n $max $skip --first-parent --format=%H)
+        }
         # 各SHA1のBranchNameを取得..
         foreach ($item1 in $idList) {
             $pui.UpdateUI("s2. Get-Branch Names")
