@@ -53,9 +53,9 @@ if ($json.Git.LocalFolderRoot) {
     # move current folder.
     Push-Location $json.Git.LocalFolderRoot
     echo ("current : "+(Convert-Path .))
-    # local branch
-    $nb = git rev-parse --abbrev-ref HEAD
-    echo ("git branch : "+$nb)
+    # 現在のLocalのBranch名.
+    $nowBranchName = git rev-parse --abbrev-ref HEAD
+    echo ("git branch : "+$nowBranchName)
     # now ID
     $nowID = git log -n 1 --format=%H
     echo ("git commit ID(SHA1) : "+$nowID)
@@ -74,9 +74,6 @@ if ($json.Git.LocalFolderRoot) {
         }
     }
 
-	# 現在のLocalのBranch名.
-	$nowBranchName = git rev-parse --abbrev-ref HEAD
-
     # コミット忘れ(ファイル名)
     $a1 = git diff --name-only HEAD
     if ($a1) {
@@ -88,6 +85,7 @@ if ($json.Git.LocalFolderRoot) {
 # TODO: 複数出るので比較検索するしかないかな・・・？
 	$nowRemoteNameList = git remote
     if ($nowRemoteNameList -is [array]) {
+    # 実行して,、try{}catch{} 例外ならば無視対象...ただし、実行するとGitがエラー表示物を強制表示(回避不可っぽい)...
         $nowRemoteName = SelectMenuUI $nowRemoteNameList "Which remote is local?" -Index
     } else {
         $nowRemoteName = $nowRemoteNameList
