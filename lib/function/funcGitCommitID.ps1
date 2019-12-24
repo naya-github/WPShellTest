@@ -15,12 +15,14 @@ function global:GetFirstMatchedCommitID
     $hash = @{}
     $backup = @{}
 
-    $after = [DateTime]::ParseExact($after,"yyyy/MM/dd", $null)
-    $before = [DateTime]::ParseExact($before,"yyyy/MM/dd", $null)
-# $dt3 = $dt2 - $dt1;
-# Write-Host $dt3.Days; 
-    $after = $after.ToString("yyyy/MM/dd")
-    $before = $before.ToString("yyyy/MM/dd")
+    if ($after) {
+        $after = [DateTime]::ParseExact($after,"yyyy/MM/dd", $null)
+        $after = $after.ToString("yyyy/MM/dd")
+    }
+    if ($before) {
+        $before = [DateTime]::ParseExact($before,"yyyy/MM/dd", $null)
+        $before = $before.ToString("yyyy/MM/dd")
+    }
 
     $count = 0
     $maxcount = 0
@@ -30,8 +32,12 @@ function global:GetFirstMatchedCommitID
         $pui.UpdateUI("s1. Get-Log SHA1[$max]")
         # LogのSHA1配列を取得.
         $skip = '--skip=' + $count
-        if ($after) {
+        if ($after -and $before) {
+            $idList = @(git log $branchName -n $max $skip --first-parent --format=%H --after $after --before $before)
+        } elseif ($after) {
             $idList = @(git log $branchName -n $max $skip --first-parent --format=%H --after $after)
+        } elseif ($before) {
+            $idList = @(git log $branchName -n $max $skip --first-parent --format=%H --before $before)
         } else {
             $idList = @(git log $branchName -n $max $skip --first-parent --format=%H)
         }

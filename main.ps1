@@ -53,12 +53,6 @@ if ($json.Git.LocalFolderRoot) {
     # move current folder.
     Push-Location $json.Git.LocalFolderRoot
     echo ("current : "+(Convert-Path .))
-    # 現在のLocalのBranch名.
-    $nowBranchName = git rev-parse --abbrev-ref HEAD
-    echo ("git branch : "+$nowBranchName)
-    # now ID
-    $nowID = git log -n 1 --format=%H
-    echo ("git commit ID(SHA1) : "+$nowID)
 
     # 日本語設定を確認する
     $gc_cq = git config --local core.quotepath
@@ -66,13 +60,23 @@ if ($json.Git.LocalFolderRoot) {
     echo ("Gitの言語設定 [ pager="+$gc_cp+", quotepath="+$gc_cq+" ]")
     # 日本語設定を追加(完全ではない....)
     if ($gc_cq -ne "false" -or $gc_cp -ne "LC_ALL=ja_JP.UTF-8 less -Sx4") {
-        $re = SelectDialogUI "Git Config(local) の設定を変えますか？"
+        $re = SelectDialogUI "Git Config(local) の言語設定を変えますか？"
         if ($re -eq 0) {
             git config --local core.quotepath false
             git config --local core.pager "LC_ALL=ja_JP.UTF-8 less -Sx4"
             echo "設定変更しました「Git Config --local」"
         }
     }
+    
+    # 変数初期化
+    $nowRemoteName = $null
+
+    # 現在のLocalのBranch名.
+    $nowBranchName = git rev-parse --abbrev-ref HEAD
+    echo ("[now] git branch : "+$nowBranchName)
+    # now ID(long)
+    $nowID = git log -n 1 --format=%H
+    echo ("[now] git commit ID(SHA1) : "+$nowID)
 
     # コミット忘れ(ファイル名)
     $a1 = git diff --name-only HEAD
@@ -82,14 +86,15 @@ if ($json.Git.LocalFolderRoot) {
         echo ($a1 -join ", ")
     }
 
-	$nowRemoteNameList = git remote
-    if ($nowRemoteNameList -is [array]) {
-    # 複数出るので比較検索するしかないかな・・・？
-    # 実行して,、try{}catch{} 例外ならば無視対象...ただし、実行するとGitがエラー表示物を強制表示(回避不可っぽい)...
-        $msg = "現在のリモートはどれですか？ ( 現在のLocalブランチ [ "+$nowBranchName+" ] )"
-        $nowRemoteName = SelectMenuUI $nowRemoteNameList "Which remote is local?" -Index
-    } else {
-        $nowRemoteName = $nowRemoteNameList
+    # select now-remote (不明な場合...)
+    if ( -not $nowRemoteName) {
+	    $nowRemoteNameList = git remote
+        if ($nowRemoteNameList -is [array]) {
+            $msg = "現在のリモートはどれですか？ ( 現在のブランチ [ "+$nowBranchName+" ] )"
+            $nowRemoteName = SelectMenuUI $nowRemoteNameList $msg -Index
+        } else {
+            $nowRemoteName = $nowRemoteNameList
+        }
     }
 
     # 未プッシュの確認(sha1)
@@ -106,11 +111,8 @@ if ($json.Git.LocalFolderRoot) {
         Read-Host -Prompt "処理を続けますか？(Press Enter to next?)"
     }
 
-    # log に日付対応の機能を追加.
-    # json のリストにも日付を追加.
-$c = GetFirstMatchedCommitID "origin/develop" "origin/master"
-print $c
-$c = GetLatestMatchedCommitID "origin/develop" "origin/master"
+    
+$c = GetFirstMatchedCommitID "origin/develop" "origin/master" -after "2019/11/1"
 print $c
 
     # move curent folder.
@@ -124,22 +126,7 @@ pause
 exit 1
 
 
-echo "---< match sha1(first) >-----------------------------------"
-$c = GetFirstMatchedCommitID "origin/develop" "origin/master"
-var_dump $c
-echo "---< match sha1(latest) >-----------------------------------"
-$c = GetLatestMatchedCommitID -branchName1 "origin/develop" -branchName2 "origin/master"
-var_dump $c
-
-Read-Host -Prompt "Press Enter to next"
-
 if ($hashConfig.ContainsKey('GitLocalFolderRoot')) {
-    echo "---< cd >-----------------------------------"
-    cd $hashConfig['GitLocalFolderRoot']
-    Convert-Path .
-
-    # 現在のlocal-branch
-    git rev-parse --abbrev-ref HEAD
 
     if ($hashConfig.ContainsKey('GitBranch') -and $hashConfig.ContainsKey('GitRemote')) {
 
