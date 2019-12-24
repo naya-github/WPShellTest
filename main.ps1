@@ -82,10 +82,11 @@ if ($json.Git.LocalFolderRoot) {
         echo ($a1 -join ", ")
     }
 
-# TODO: 複数出るので比較検索するしかないかな・・・？
 	$nowRemoteNameList = git remote
     if ($nowRemoteNameList -is [array]) {
+    # 複数出るので比較検索するしかないかな・・・？
     # 実行して,、try{}catch{} 例外ならば無視対象...ただし、実行するとGitがエラー表示物を強制表示(回避不可っぽい)...
+        $msg = "現在のリモートはどれですか？ ( 現在のLocalブランチ [ "+$nowBranchName+" ] )"
         $nowRemoteName = SelectMenuUI $nowRemoteNameList "Which remote is local?" -Index
     } else {
         $nowRemoteName = $nowRemoteNameList
