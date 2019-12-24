@@ -10,10 +10,12 @@
         "PuttyPageant":"C:\\Program Files\\TortoiseGit\\bin\\pageant.exe",
 		"SshPrivateKey":"C:\\Users\\UserName\\.ssh\\id_rsa",
         "OriginRemote":"origin",
-        "MasterBranch":"master",
-        "DevelopBranch":"develop",
-        "TrialBranch":"debug",
-        "ForkRemote":"fork"
+        "OriginBranch":[
+        	{ "Key":"Master", "Value":"master" },
+        	{ "Key":"Develop", "Value":"develop" },
+        	{ "Key":"Trial", "Value":"debug" },
+        	{ "Key":"Fork", "Value":"fork" }
+        ]
     },
     "CompList":[
     	{ "ID":0, "Name":"依頼済み" },
