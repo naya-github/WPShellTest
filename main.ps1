@@ -7,6 +7,8 @@
 
 # include module (class etc...)
 using module ".\lib\module\PathHelper.psm1"
+using module ".\lib\module\FileHelper.psm1"
+using module ".\lib\module\FileJson.psm1"
 using module ".\lib\module\WindowRect.psm1"
 using module ".\lib\module\InputUI.psm1"
 using module ".\lib\module\SelectMenuUI.psm1"
@@ -21,7 +23,6 @@ Param(
 # include
 . .\lib\function\funcPrint.ps1
 . .\lib\function\funcLog.ps1
-. .\lib\function\funcFile.ps1
 . .\lib\function\funcGitCommitID.ps1
 . .\lib\function\funcSelectDialogUI.ps1
 . .\lib\function\funcSelectGridWindow.ps1
@@ -110,6 +111,16 @@ if ($json.Git.LocalFolderRoot) {
         echo "`n"
         Read-Host -Prompt "処理を続けますか？(Press Enter to next?)"
     }
+
+    # new file : requestpath/name/name.json
+    for ($i=0;$i -lt $json.RequestList.Length;$i++) {
+        $name = $json.RequestList[$i]
+        $path = $json.PS.RequestFolderPath+"\"+$name+"\"+$name+".json"
+        NewFile $path
+    }
+    # name/name.json の中身をテンプレ的に作成.
+    # 存在しない変数のみを追加更新する...
+
 
     # 指定フォルダ以下の特定ファイル(*.json)の絶対パスを取得する.
 #$list = Get-ChildItem -Path $json.PS.RequestFolderPath -Recurse -File -Filter *.json | ForEach-Object{$_.FullName}

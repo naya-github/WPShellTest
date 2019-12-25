@@ -13,7 +13,7 @@
         "OriginBranch":[
         	{ "Key":"Master", "Value":"master" },
         	{ "Key":"Develop", "Value":"develop" },
-        	{ "Key":"Trial", "Value":"debug" }
+        	{ "Key":"Trial", "Value":"trial" }
         ]
     },
     "CompList":[
