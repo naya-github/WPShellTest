@@ -111,9 +111,12 @@ if ($json.Git.LocalFolderRoot) {
         Read-Host -Prompt "処理を続けますか？(Press Enter to next?)"
     }
 
+    # 指定フォルダ以下の特定ファイル(*.json)の絶対パスを取得する.
+#$list = Get-ChildItem -Path $json.PS.RequestFolderPath -Recurse -File -Filter *.json | ForEach-Object{$_.FullName}
+#$json.RequestList
     
-$c = GetFirstMatchedCommitID "origin/develop" "origin/master" -after "2019/11/1"
-print $c
+#$c = GetFirstMatchedCommitID "origin/develop" "origin/master" -after "2019/11/1"
+#print $c
 
     # move curent folder.
     Pop-Location
