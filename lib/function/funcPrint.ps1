@@ -3,6 +3,7 @@ Set-StrictMode -Version 5.0 # -Version Latest
 
 function global:var_dump($prm1) {
     $prm1 | ForEach-object -Process { Write-Host $_ }
+#    $prm1 | Get-Member
 }
 
 function global:print {

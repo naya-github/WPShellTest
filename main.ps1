@@ -32,6 +32,19 @@ Set-StrictMode -Version 5.0 # -Version Latest
 
 $ErrorActionPreference = "Inquire" #"Stop"
 
+$jsonString = '{"RNo":"6097","Title":"aaaa","SSS":[1,2,3,4]}'
+$json = ToJson $jsonString
+Write-Host $json
+WriteJson $json ".\wtest.json"
+$json = New-Object -TypeName PSObject
+$json | Add-Member -MemberType NoteProperty -Name "RNo" -Value "6097"
+$json | Add-Member -MemberType NoteProperty -Name "Title" -Value $null
+$arraynum = @(1,2,3,4);
+$json | Add-Member -MemberType NoteProperty -Name "SSS" -Value $arraynum
+$arraynum = @{a=1;b=2;c=3;d=4};
+$json | Add-Member -MemberType NoteProperty -Name "RRR" -Value $arraynum
+WriteJson $json ".\wtest2.json"
+
 # load config[json]
 $json = ReadJson $ConfigFilePath
 # start log.

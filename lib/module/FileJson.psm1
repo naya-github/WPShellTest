@@ -5,6 +5,11 @@ function global:ReadJson([string]$jsonFile)
     $json = Get-Content $jsonFile | Out-String | ConvertFrom-Json
     Write-Output $json
 }
+function global:ToJson([string]$jsonString)
+{
+    $json = ConvertFrom-Json $jsonString
+    Write-Output $json
+}
 
 # NoteProperty は、オブジェクトに静的な値を持つメンバーを追加するために使いま
 function global:AddMember($obj, [string]$name, $value)
@@ -13,6 +18,7 @@ function global:AddMember($obj, [string]$name, $value)
 #    Write-Output $obj
 }
 
+# !!! 不要な関数
 function global:AddMemberArray($obj, [string]$name, [array]$value)
 {
     $obj | Add-Member -MemberType NoteProperty -Name ($name+'_Length') -Value $value.Length
@@ -22,6 +28,7 @@ function global:AddMemberArray($obj, [string]$name, [array]$value)
 #    Write-Output $obj
 }
 
+# !!! 不要な関数
 function global:GetMemberArray($obj, [string]$name, $index = -1)
 {
     $objLength = $obj.($name+'_Length')
@@ -45,6 +52,7 @@ function global:RemoveMember($obj, [string]$name)
     $obj.PSObject.Properties.Remove($name)
 }
 
+# !!! 不要な関数
 function global:RemoveMemberArray($obj, [string]$name)
 {
     $objLength = $obj.($name+'_Length')
