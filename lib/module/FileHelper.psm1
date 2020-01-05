@@ -3,7 +3,7 @@
 
 function global:NewFile([string]$path)
 {
-	$aryPath = $path -split "\"
+	$aryPath = $path -split "\\"
 	$testPath = ""
     for ($i=0;$i -lt $aryPath.Length;$i++) {
         if ($testPath) {

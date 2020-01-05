@@ -5,7 +5,7 @@ function global:ReadJson([string]$jsonFile)
     $json = Get-Content $jsonFile | Out-String | ConvertFrom-Json
     Write-Output $json
 }
-function global:ToJson([string]$jsonString)
+function global:StringToJson([string]$jsonString)
 {
     $json = ConvertFrom-Json $jsonString
     Write-Output $json

@@ -26,24 +26,13 @@ Param(
 . .\lib\function\funcGitCommitID.ps1
 . .\lib\function\funcSelectDialogUI.ps1
 . .\lib\function\funcSelectGridWindow.ps1
+. .\ReqFile.ps1
 
 # win-10         ps:5.0
 Set-StrictMode -Version 5.0 # -Version Latest
 
 $ErrorActionPreference = "Inquire" #"Stop"
 
-$jsonString = '{"RNo":"6097","Title":"aaaa","SSS":[1,2,3,4]}'
-$json = ToJson $jsonString
-Write-Host $json
-WriteJson $json ".\wtest.json"
-$json = New-Object -TypeName PSObject
-$json | Add-Member -MemberType NoteProperty -Name "RNo" -Value "6097"
-$json | Add-Member -MemberType NoteProperty -Name "Title" -Value $null
-$arraynum = @(1,2,3,4);
-$json | Add-Member -MemberType NoteProperty -Name "SSS" -Value $arraynum
-$arraynum = @{a=1;b=2;c=3;d=4};
-$json | Add-Member -MemberType NoteProperty -Name "RRR" -Value $arraynum
-WriteJson $json ".\wtest2.json"
 
 # load config[json]
 $json = ReadJson $ConfigFilePath
@@ -52,18 +41,16 @@ StartLog $json.PS.LogPath $json.PS.LogAppend
 # SET Encoding
 $OutputEncoding = $json.PS.Encod # 'utf-8'
 
-echo "`n"
-
 # 起動:[SSH]Putty
 if ($json.Git.SshPrivateKey) {
+    echo "`n"
 	&$json.Git.PuttyPageant $json.Git.SshPrivateKey
 	echo "[SSH] Putty/Pageant 起動!!"
 	Read-Host -Prompt "処理を続けますか？(Press Enter to next?)"
 }
 
-echo "`n"
-
 if ($json.Git.LocalFolderRoot) {
+    echo "`n"
     # move current folder.
     Push-Location $json.Git.LocalFolderRoot
     echo ("current : "+(Convert-Path .))
@@ -130,9 +117,10 @@ if ($json.Git.LocalFolderRoot) {
         $name = $json.RequestList[$i]
         $path = $json.PS.RequestFolderPath+"\"+$name+"\"+$name+".json"
         NewFile $path
+        # 中身をテンプレ的に作成(未定義変数の定義).
+        $rj = NewReqJson $path
+        WriteJson $rj $path
     }
-    # name/name.json の中身をテンプレ的に作成.
-    # 存在しない変数のみを追加更新する...
 
 
     # 指定フォルダ以下の特定ファイル(*.json)の絶対パスを取得する.
