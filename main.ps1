@@ -43,29 +43,29 @@ $OutputEncoding = $json.PS.Encod # 'utf-8'
 
 # 起動:[SSH]Putty
 if ($json.Git.SshPrivateKey) {
-    echo "`n"
+    Write-Host "`n"
 	&$json.Git.PuttyPageant $json.Git.SshPrivateKey
-	echo "[SSH] Putty/Pageant 起動!!"
+	Write-Host "[SSH] Putty/Pageant 起動!!"
 	Read-Host -Prompt "処理を続けますか？(Press Enter to next?)"
 }
 
 if ($json.Git.LocalFolderRoot) {
-    echo "`n"
+    Write-Host "`n"
     # move current folder.
     Push-Location $json.Git.LocalFolderRoot
-    echo ("current : "+(Convert-Path .))
+    Write-Host ("current : "+(Convert-Path .))
 
     # 日本語設定を確認する
     $gc_cq = git config --local core.quotepath
     $gc_cp = git config --local core.pager
-    echo ("Gitの言語設定 [ pager="+$gc_cp+", quotepath="+$gc_cq+" ]")
+    Write-Host ("Gitの言語設定 [ pager="+$gc_cp+", quotepath="+$gc_cq+" ]")
     # 日本語設定を追加(完全ではない....)
     if ($gc_cq -ne "false" -or $gc_cp -ne "LC_ALL=ja_JP.UTF-8 less -Sx4") {
         $re = SelectDialogUI "Git Config(local) の言語設定を変えますか？"
         if ($re -eq 0) {
             git config --local core.quotepath false
             git config --local core.pager "LC_ALL=ja_JP.UTF-8 less -Sx4"
-            echo "設定変更しました「Git Config --local」"
+            Write-Host "設定変更しました「Git Config --local」"
         }
     }
     
@@ -74,17 +74,17 @@ if ($json.Git.LocalFolderRoot) {
 
     # 現在のLocalのBranch名.
     $nowBranchName = git rev-parse --abbrev-ref HEAD
-    echo ("[now] git branch : "+$nowBranchName)
+    Write-Host ("[now] git branch : "+$nowBranchName)
     # now ID(long)
     $nowID = git log -n 1 --format=%H
-    echo ("[now] git commit ID(SHA1) : "+$nowID)
+    Write-Host ("[now] git commit ID(SHA1) : "+$nowID)
 
     # コミット忘れ(ファイル名)
     $a1 = git diff --name-only HEAD
     if ($a1) {
-        echo "`n"
-        echo "コミット忘れてませんか？"
-        echo ($a1 -join ", ")
+        Write-Host "`n"
+        Write-Host "コミット忘れてませんか？"
+        Write-Host ($a1 -join ", ")
     }
 
     # select now-remote (不明な場合...)
@@ -92,7 +92,7 @@ if ($json.Git.LocalFolderRoot) {
 	    $nowRemoteNameList = git remote
         if ($nowRemoteNameList -is [array]) {
             $msg = "現在のリモートはどれですか？ ( 現在のブランチ [ "+$nowBranchName+" ] )"
-            $nowRemoteName = SelectMenuUI $nowRemoteNameList $msg -Index
+            $nowRemoteName = SelectMenuUI $nowRemoteNameList $msg
         } else {
             $nowRemoteName = $nowRemoteNameList
         }
@@ -101,14 +101,14 @@ if ($json.Git.LocalFolderRoot) {
     # 未プッシュの確認(sha1)
     $a2 = git log ($nowRemoteName+'/'+$nowBranchName)..HEAD --format=%H
     if ($a2) {
-        echo "`n"
-        echo "プッシュ忘れてませんか？"
-        echo "SHA-1 list."
-        echo $a2
+        Write-Host "`n"
+        Write-Host "プッシュ忘れてませんか？"
+        Write-Host "SHA-1 list."
+        Write-Host $a2
     }
 
     if ($a1 -or $a2) {
-        echo "`n"
+        Write-Host "`n"
         Read-Host -Prompt "処理を続けますか？(Press Enter to next?)"
     }
 
@@ -122,6 +122,7 @@ if ($json.Git.LocalFolderRoot) {
         WriteJson $rj $path
     }
 
+    $slct = SelectMenuUI $json.RequestList "どれ?" -Index
 
     # 指定フォルダ以下の特定ファイル(*.json)の絶対パスを取得する.
 #$list = Get-ChildItem -Path $json.PS.RequestFolderPath -Recurse -File -Filter *.json | ForEach-Object{$_.FullName}
@@ -145,24 +146,24 @@ if ($hashConfig.ContainsKey('GitLocalFolderRoot')) {
 
     if ($hashConfig.ContainsKey('GitBranch') -and $hashConfig.ContainsKey('GitRemote')) {
 
-        echo "---< git checkout >-----------------------------------"
+        Write-Host "---< git checkout >-----------------------------------"
         git checkout $hashConfig['GitBranch']
 
-        echo "---< git pull >-----------------------------------"
+        Write-Host "---< git pull >-----------------------------------"
         git pull $hashConfig['GitRemote'] $hashConfig['GitBranch']
 
-        echo "---< git now revision(sha1) >------------------------------"
+        Write-Host "---< git now revision(sha1) >------------------------------"
         $strlog = git log -n 1 --format=%h
-        echo ("SHA1(now/short):"+$strlog)
+        Write-Host ("SHA1(now/short):"+$strlog)
         $strlog = git log -n 1 --format=%H
-        echo ("SHA1(now/long):"+$strlog)
+        Write-Host ("SHA1(now/long):"+$strlog)
 
         $strRevLong = git rev-parse --branches
-        echo ("SHA1(now/long):"+$strRevLong)
+        Write-Host ("SHA1(now/long):"+$strRevLong)
         $strRevSort = git rev-parse --short $strRevLong
-        echo ("SHA1(now/short):"+$strRevSort)
+        Write-Host ("SHA1(now/short):"+$strRevSort)
 
-        echo "---< git diff >------------------------------"
+        Write-Host "---< git diff >------------------------------"
         git diff --name-only $strRevLong
         git diff --name-status $strRevLong
 
