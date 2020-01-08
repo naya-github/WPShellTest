@@ -4,13 +4,16 @@ Set-StrictMode -Version 5.0 # -Version Latest
 
 function global:NewReqJson($jsonPath=$null) {
     if ($jsonPath -eq $null) {
-        $json = New-Object -TypeName PSObject
+        $json = New-Object -TypeName PSCustomObject
     }
     elseif (Test-Path $jsonPath) {
         $json = ReadJson $jsonPath
+        if (-not $json) {
+            $json = New-Object -TypeName PSCustomObject
+        }
     }
     else {
-        $json = New-Object -TypeName PSObject
+        $json = New-Object -TypeName PSCustomObject
     }
 
     # ReqID:
