@@ -130,7 +130,8 @@ for ($i=0;$i -lt $json.RequestList.Length;$i++) {
 
 
 Read-Host -Prompt "処理を続けますか？(Press Enter to next?)"
-Write-Host "`n=====<< Select Menu >>========================================"
+Write-Host "`n=====<< Select Menu >>==========================================="
+# 0. 終了.
 # 1. Request 選択.
 # 2. Commit 忘れ確認.
 # 3. Putty(SSH) 起動.
@@ -139,14 +140,16 @@ $slct = SelectMenuUI $json.RequestList "どれ?" -Index
 # 選択したRequestのデータが、空なら入力を促す.
 
 # 選択Requestで、なんの処理をするか選択する.
-# 1. git checkout
-# 2. git commit&push (コメント入力補助)
-# 3. 修正対象をサーバーからバックアップしてマスターからサーバーへ更新をかける.
-# 4. バックアップからサーバーへ修正対象を巻き戻し
-# 5. 
-Write-Host "`n=====<< Start Working >>======================================"
+# 0. 戻る.
+# 1. Requestのデータを表示する.
+# 2. git checkout
+# 3. git commit&push (コメント入力補助)
+# 4. 修正対象をサーバーからバックアップしてマスターからサーバーへ更新をかける.
+# 5. バックアップからサーバーへ修正対象を巻き戻し
+# 6. 
+Write-Host "`n=====<< Start Working >>========================================="
 
-Write-Host "=====<< End   Working >>======================================"
+Write-Host "=====<< End   Working >>========================================="
 
 # 指定フォルダ以下の特定ファイル(*.json)の絶対パスを取得する.
 #$list = Get-ChildItem -Path $json.RequestFolderPath -Recurse -File -Filter *.json | ForEach-Object{$_.FullName}
