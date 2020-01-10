@@ -14,6 +14,6 @@ function SelectDialogUI {
     $choice = [System.Management.Automation.Host.ChoiceDescription[]]($yes,$no)
 
     #選択プロンプトの表示
-    $answer = $host.ui.PromptForChoice("<確認>", $message, $choice, 0)
+    $answer = $host.ui.PromptForChoice("<確認>", $message, $choice, 1)
     Write-Output $answer
 }

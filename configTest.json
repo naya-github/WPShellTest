@@ -1,12 +1,12 @@
 ﻿{
+    "CurrentFolderPath":"A:\\Gitter",
     "PS":{
         "Encod":"utf-8",
         "LogPath":".\\Log\\",
-        "LogAppend":0,
-        "RequestFolderPath":".\\Request"
+        "LogAppend":0
     },
     "Git":{
-        "LocalFolderRoot":"A:\\Gitter\\AndroidProject",
+        "LocalFolderRoot":".\\AndroidProject",
         "PuttyPageant":"C:\\Program Files\\TortoiseGit\\bin\\pageant.exe",
 		"SshPrivateKey":"C:\\Users\\UserName\\.ssh\\id_rsa",
         "OriginRemote":"origin",
@@ -26,6 +26,7 @@
     	{ "ID":6, "Name":"反映済み" },
     	{ "ID":7, "Name":"完了" }
     ],
+    "RequestFolderPath":".\\Request",
     "RequestList":[
         "203",
         "201",

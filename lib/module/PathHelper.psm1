@@ -89,6 +89,21 @@ function global:ToRelativePath
     }
 }
 
+# 絶対パスかどうか確認
+function global:IsFullPath
+{
+    Param (
+        [string] $Path
+    )
+
+    if ($Path -match "^[a-zA-Z0-9_-]+:\\") {
+        Write-Host $true
+    }
+    elseif ($Path -match "^\\\\") {
+        Write-Host $true
+    }
+    Write-Host $false
+}
 
 function global:IsDirectory([string]$path1, $endDelimiter=$true) {
     $result = $false
