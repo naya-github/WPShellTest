@@ -28,6 +28,10 @@ Param(
 . .\lib\function\funcSelectGridWindow.ps1
 . .\ReqFile.ps1
 
+. .\Scene_StartPageant.ps1
+. .\Scene_SetGitLanguageJp.ps1
+. .\Scene_CheckForgetCommit.ps1
+
 # win-10         ps:5.0
 Set-StrictMode -Version 5.0 # -Version Latest
 
@@ -45,77 +49,81 @@ Write-Host ("current : "+(Convert-Path .))
 # SET Encoding
 $OutputEncoding = $json.PS.Encod # 'utf-8'
 
-# 起動:[SSH]Putty
-if ($json.Git.SshPrivateKey) {
-	&$json.Git.PuttyPageant $json.Git.SshPrivateKey
-	Write-Host "[SSH] Putty/Pageant 起動!!"
-}
+# 起動:[SSH]pageant(Putty)
+Scene_StartPageant $json.Git.PuttyPageant $json.Git.SshPrivateKey
+#if ($json.Git.SshPrivateKey) {
+#	&$json.Git.PuttyPageant $json.Git.SshPrivateKey
+#	Write-Host "[SSH] Putty/Pageant 起動!!"
+#}
+
+# Gitの日本語設定
+Scene_SetGitLanguageJp $json.Git.LocalFolderRoot
 
 if ($json.Git.LocalFolderRoot) {
-    
-    Push-Location $json.Git.LocalFolderRoot
-
     # 表示:git current folder.
+    Push-Location $json.Git.LocalFolderRoot
     Write-Host ("Git Path : "+(Convert-Path .))
+    Pop-Location
 
     # Gitの日本語設定を確認表示し設定を促す
-    $gc_cq = git config --local core.quotepath
-    $gc_cp = git config --local core.pager
-    Write-Host ("Gitの言語設定 [ pager="+$gc_cp+", quotepath="+$gc_cq+" ]")
-    if ($gc_cq -ne "false" -or $gc_cp -ne "LC_ALL=ja_JP.UTF-8 less -Sx4") {
-        # Gitの日本語設定を確認する
-        $re = SelectDialogUI "Git Config(local) の言語設定を変えますか？"
-        if ($re -eq 0) {
-            # Gitの日本語設定を追加(完全ではない....かも?)
-            git config --local core.quotepath false
-            git config --local core.pager "LC_ALL=ja_JP.UTF-8 less -Sx4"
-            Write-Host "設定変更しました「Git Config --local」"
-        }
-    }
+#    $gc_cq = git config --local core.quotepath
+#    $gc_cp = git config --local core.pager
+#    Write-Host ("Gitの言語設定 [ pager="+$gc_cp+", quotepath="+$gc_cq+" ]")
+#    if ($gc_cq -ne "false" -or $gc_cp -ne "LC_ALL=ja_JP.UTF-8 less -Sx4") {
+#        # Gitの日本語設定を確認する
+#        $re = SelectDialogUI "Git Config(local) の言語設定を変えますか？"
+#        if ($re -eq 0) {
+#            # Gitの日本語設定を追加(完全ではない....かも?)
+#            git config --local core.quotepath false
+#            git config --local core.pager "LC_ALL=ja_JP.UTF-8 less -Sx4"
+#            Write-Host "設定変更しました「Git Config --local」"
+#        }
+#    }
     
-    # git:現在のLocalのBranch名. (git symbolic-ref -q --short HEAD)
-    $nowBranchName = git rev-parse --abbrev-ref HEAD
-    Write-Host ("[now] git branch : "+$nowBranchName)
-    # git:現在のコミットID(SHA1/long)
-    $nowID = git log -n 1 --format=%H
-    Write-Host ("[now] git commit ID(SHA1) : "+$nowID)
+    # commit&push忘れの確認.
+    Scene_CheckForgetCommit $json.Git.LocalFolderRoot $json.Git.BranchList
+#    # git:現在のLocalのBranch名. (git symbolic-ref -q --short HEAD)
+#    $nowBranchName = git rev-parse --abbrev-ref HEAD
+#    Write-Host ("[now] git branch : "+$nowBranchName)
+#    # git:現在のコミットID(SHA1/long)
+#    $nowID = git log -n 1 --format=%H
+#    Write-Host ("[now] git commit ID(SHA1) : "+$nowID)
+#
+#    # コミット忘れ(表示はファイル名)
+#    $a1 = git diff --name-only HEAD
+#    if ($a1) {
+#        Write-Host "コミット忘れてませんか？"
+#        Write-Host ($a1 -join ", ")
+#    }
+#
+#    # git:現在のリモート名を取得
+#    $nowRemoteName = $null
+#    $nowRemoteNameList = git remote
+#    if ($nowRemoteNameList -is [array]) {
+#        $nowRemoteName = git config branch."${nowBranchName}".remote
+#        # TODO: [remote / branch 対応表]から探す ( 有れば、それを使う ).
+#        if (-not $nowRemoteName) {
+#            $msg = "現在のリモートはどれですか？ ( 現在のブランチ [ "+$nowBranchName+" ] )"
+#            $nowRemoteName = SelectMenuUI $nowRemoteNameList $msg
+#            # TODO: 選択した物をコンフィグに格納(remote / branch 対応表)
+#            #  ( Saved config[json] >> WriteJson $json $ConfigFilePath )
+#        }
+#    } else {
+#        $nowRemoteName = $nowRemoteNameList
+#    }
+#
+#    # 未プッシュの確認(表示はSHA1)
+#    $a2 = git log ($nowRemoteName+'/'+$nowBranchName)..HEAD --format=%H
+#    if ($a2) {
+#        Write-Host "プッシュ忘れてませんか？"
+#        Write-Host "CommitID(SHA-1) list."
+#        Write-Host $a2
+#    }
 
-    # コミット忘れ(表示はファイル名)
-    $a1 = git diff --name-only HEAD
-    if ($a1) {
-        Write-Host "コミット忘れてませんか？"
-        Write-Host ($a1 -join ", ")
-    }
-
-    # git:現在のリモート名を取得
-    $nowRemoteName = $null
-    $nowRemoteNameList = git remote
-    if ($nowRemoteNameList -is [array]) {
-        $nowRemoteName = git config branch."${nowBranchName}".remote
-        # TODO: [remote / branch 対応表]から探す ( 有れば、それを使う ).
-        if (-not $nowRemoteName) {
-            $msg = "現在のリモートはどれですか？ ( 現在のブランチ [ "+$nowBranchName+" ] )"
-            $nowRemoteName = SelectMenuUI $nowRemoteNameList $msg
-            # TODO: 選択した物をコンフィグに格納(remote / branch 対応表)
-            #  ( Saved config[json] >> WriteJson $json $ConfigFilePath )
-
-        }
-    } else {
-        $nowRemoteName = $nowRemoteNameList
-    }
-
-    # 未プッシュの確認(表示はSHA1)
-    $a2 = git log ($nowRemoteName+'/'+$nowBranchName)..HEAD --format=%H
-    if ($a2) {
-        Write-Host "プッシュ忘れてませんか？"
-        Write-Host "CommitID(SHA-1) list."
-        Write-Host $a2
-    }
-
-    Pop-Location
-    if ($a1 -or $a2) {
-        Read-Host -Prompt "処理を続けますか？(Press Enter to next?)"
-    }
+#    Pop-Location
+#    if ($a1 -or $a2) {
+#        Read-Host -Prompt "処理を続けますか？(Press Enter to next?)"
+#    }
 }
 
 # new request file : requestpath/name/name.json

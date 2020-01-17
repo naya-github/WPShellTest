@@ -14,7 +14,8 @@
         	{ "Key":"Master", "Value":"master" },
         	{ "Key":"Develop", "Value":"develop" },
         	{ "Key":"Trial", "Value":"trial" }
-        ]
+        ],
+        "BranchList":".\\branchList.json"
     },
     "CompList":[
     	{ "ID":0, "Name":"依頼済み" },

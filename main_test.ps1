@@ -1,27 +1,20 @@
-﻿# ExecutionPolicy オプションによる実行ポリシーの変更
-# [ PowerShell -ExecutionPolicy RemoteSigned ]
-# or
-# Set-ExecutionPolicy による恒久的な実行ポリシーの変更
-# [ PowerShell Set-ExecutionPolicy RemoteSigned ]
-# デフォルト : Set-ExecutionPolicy Restricted
-# include module (class etc...)
-using module ".\PathHelper.psm1"
-using module ".\WindowRect.psm1"
-using module ".\InputUI.psm1"
-using module ".\SelectMenuUI.psm1"
-using module ".\ProgressUI.psm1"
-using module ".\TypeHelper.psm1"
+﻿# include module (class etc...)
+using module ".\lib\module\PathHelper.psm1"
+using module ".\lib\module\FileHelper.psm1"
+using module ".\lib\module\FileJson.psm1"
+using module ".\lib\module\WindowRect.psm1"
+using module ".\lib\module\InputUI.psm1"
+using module ".\lib\module\SelectMenuUI.psm1"
+using module ".\lib\module\ProgressUI.psm1"
+using module ".\lib\module\TypeHelper.psm1"
 
-# 起動時の引数を指定する.
-Param(
-    [parameter(mandatory=$true)][String]$ConfigFilePath
-)
 # include
-. .\funcTest.ps1
-. .\funcLog.ps1
-. .\funcFile.ps1
-. .\funcGitCommitID.ps1
-. .\funcSelectGridWindow.ps1
+. .\lib\function\funcPrint.ps1
+. .\lib\function\funcLog.ps1
+. .\lib\function\funcGitCommitID.ps1
+. .\lib\function\funcSelectDialogUI.ps1
+. .\lib\function\funcSelectGridWindow.ps1
+. .\ReqFile.ps1
 
 # win-8.0        ps:3.0
 # win-8.1        ps:4.0
@@ -29,7 +22,23 @@ Param(
 # win-10(update) ps:5.1 
 Set-StrictMode -Version 5.0 # -Version Latest
 
-$ErrorActionPreference = "Inquire" #"Stop"
+#$ErrorActionPreference = "Inquire" #"Stop"
+
+$json = New-Object -TypeName PSCustomObject
+$array = @()
+AddMember $json "CodeFileList" $array
+$json.CodeFileList += "aaaaa"
+$json.CodeFileList += "bbbbb"
+
+$obj = New-Object -TypeName PSCustomObject
+AddMember $obj "Remote" "origin"
+AddMember $obj "Branch" "master"
+$json.CodeFileList += $obj
+
+WriteJson $json ".\\test.json"
+
+pause
+exit 1
 
 echo "---< JSON-CODE >-----------------------------------"
 $json = ReadJson $ConfigFilePath
